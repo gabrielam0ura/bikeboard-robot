@@ -6,6 +6,10 @@ on:
         description: 'Escolha o navegador para executar os testes (chromium, firefox ou webkit)'
         required: true
         default: 'chromium'
+      base-url:
+        description: 'Escolha o ambiente para executar os testes (local, homolog ou production)'
+        required: true
+        default: 'http://localhost:3000'
   
 jobs:
   test:
@@ -47,10 +51,10 @@ jobs:
         CI: true
 
     - name: Wait for WebApp to be ready
-      run: npx wait-on http://localhost:3000
+      run: npx wait-on ${{ github.event.inputs.base-url }}
 
     - name: Run E2E Tests
-      run: robot -d ./logs -v BROWSER:${{ github.event.inputs.browser }} robot/tests
+      run: robot -d ./logs -v BROWSER:${{ github.event.inputs.browser }} -v BASE_URL:${{ github.event.inputs.base-url }} robot/tests
   
     - name: Publish Test Results
       uses: actions/upload-artifact@v4
